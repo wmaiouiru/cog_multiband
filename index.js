@@ -1,17 +1,22 @@
+/*
+
+
+  Convert Ref: 
+  https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#ECMAScript_.28JavaScript.2FActionScript.2C_etc..29
+*/
+
+
 const debug = require('debug')('cog');
 const GeoTIFF = require('geotiff');
 
-function sinh(arg) {
-  return (Math.exp(arg) - Math.exp(-arg)) / 2;
-}
 
-function tileToLng(x, z) {
-  return x * 360 / Math.pow(2,z) - 180;
-}
-
-function tileToLat(y, z) {
-  return Math.atan(sinh(Math.PI - y * 2 * Math.PI / Math.pow(2, z))) * (180 / Math.PI);
-}
+function tile2long(x,z) {
+  return (x/Math.pow(2,z)*360-180);
+ }
+ function tile2lat(y,z) {
+  var n=Math.PI-2*Math.PI*y/Math.pow(2,z);
+  return (180/Math.PI*Math.atan(0.5*(Math.exp(n)-Math.exp(-n))));
+ }
 
 const x = 227804;
 var y = 640169;
@@ -25,10 +30,10 @@ const cogUrl = 'https://s3.amazonaws.com/share-terravion-com/2018_cog/2018-07-31
 GeoTIFF.fromUrl(cogUrl).then(tiff => {
   debug('debug', tiff)
   tiff.getImage().then(image => {
-    var minLat = tileToLat(y, z);
-    var minLng = tileToLng(x, z);
-    var maxLat = tileToLat(y + 1 , z);
-    var maxLng = tileToLng(x + 1 , z);
+    var minLat = tile2lat(y, z);
+    var minLng = tile2long(x, z);
+    var maxLat = tile2lat(y + 1 , z);
+    var maxLng = tile2long(x + 1 , z);
     const width = image.getWidth();
     const height = image.getHeight();
     const tileWidth = image.getTileWidth();
