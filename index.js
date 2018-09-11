@@ -42,22 +42,26 @@ GeoTIFF.fromUrl(cogUrl).then(tiff => {
     debug('tileHeight', tileHeight);
     debug('samplesPerPixel', samplesPerPixel);
     debug('resolution', resolution);
-    debug('bbox', bbox);
-    debug('tileBbox', minLng, maxLat, maxLng, minLat);
+    debug('bbox', bbox[0], bbox[1], bbox[2], bbox[3]);
+    // debug('tileBbox', minLng, maxLat, maxLng, minLat);
+    debug('tileBbox', maxLat, minLng, minLat, maxLng);
     // [left, top, right, bottom]
+    // [maxLat, minLng, minLat, maxLng]
+    var tileBbox = [minLng, maxLat, maxLng, minLat];
     image.readRasters({
       width: 256,
       height: 256,
-      window: [minLng, maxLat, maxLng, minLat],
-      // bbox: [minLng, maxLat, maxLng, minLat],
+      // window: [minLng, maxLat, maxLng, minLat],
+      bbox: tileBbox,
+      // bbox: bbox,
       resampleMethod: 'bilinear',
-      samples: [0, 1 , 2, 7],
+      samples: [0, 1, 3],
       fillValue: 0
     }).then(data => {
       debug('data', data.length);
-      debug('data[0].length', data[1].length);
-      for(var index =0; index < data[1].length; index++){
-        debug('index checking', index, data[1][index]);
+      debug('data[0].length', data[0].length);
+      for(var index =0; index < data[0].length; index++){
+        debug('index checking', index, data[0][index]);
       }
     }).catch(e => {
       debug('e', e);
